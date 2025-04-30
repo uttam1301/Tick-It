@@ -1,25 +1,31 @@
 import React, { useState } from 'react';
 import InputArea from './components/InputArea';
 import TodoList from './components/TodoList';
+import { v4 as uuidv4 } from 'uuid';
 
 function App() {
   const [items, setItems] = useState([]);
-  let date;
   function addItem(inputText){
     setItems(prevItems =>{
-      return [...prevItems, inputText];
+      return [...prevItems, 
+        { id: uuidv4(), text: inputText }
+      ];
     });
-    date = new Date();
   }
   function deleteItem(id){
     setItems(prevItems => {
-      return prevItems.filter((item, index)=>{
-        return index !== id;
+      return prevItems.filter((item)=>{
+        return item.id !== id;
       });
     });
   }
-
-  
+  function editItem(id, newText){
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, text: newText } : item
+      )
+    );
+  }  
 
   console.log(items);
   return (
@@ -31,13 +37,13 @@ function App() {
         <InputArea onAdd={addItem} />
         <div>
           <ul>
-            {items.map((todoItem, index)=>{
+            {items.map((todoItem)=>{
               return <TodoList 
-                key={index}
-                id={index}
-                text={todoItem}
+                key={todoItem.id}
+                id={todoItem.id}
+                text={todoItem.text}
+                onEdit={editItem}
                 onChecked={deleteItem}
-                date={date}
               />
             })}
           </ul>
