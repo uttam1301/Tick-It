@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import InputArea from './components/InputArea';
 import TodoList from './components/TodoList';
 import { v4 as uuidv4 } from 'uuid';
 
 function App() {
-  const [items, setItems] = useState([]);
+
+  const [items, setItems] = useState(()=>{
+    const savedItems = localStorage.getItem("todoItems");
+    return savedItems ? JSON.parse(savedItems) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("todoItems", JSON.stringify(items));
+  }, [items]);
+
   function addItem(inputText){
     setItems(prevItems =>{
       return [...prevItems, 
@@ -12,6 +21,7 @@ function App() {
       ];
     });
   }
+
   function deleteItem(id){
     setItems(prevItems => {
       return prevItems.filter((item)=>{
@@ -19,6 +29,7 @@ function App() {
       });
     });
   }
+
   function editItem(id, newText){
     setItems((prevItems) =>
       prevItems.map((item) =>
